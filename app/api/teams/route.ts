@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchNcaaNetTeams } from "../../../lib/sources/ncaaNet";
 import { fetchEspnResumeRows } from "../../../lib/sources/espnBpi";
-import { json } from "../../../lib/utils";
 
 export async function GET() {
   try {
@@ -24,12 +23,21 @@ export async function GET() {
       };
     });
 
-    return json({ teams });
+    return NextResponse.json({
+      ok: true,
+      teamCount: teams.length,
+      netCount: netData.length,
+      resumeCount: resumeData.length,
+      teams
+    });
   } catch (error) {
     console.error("Error fetching team data:", error);
 
     return NextResponse.json(
-      { error: "Failed to fetch team data" },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }
