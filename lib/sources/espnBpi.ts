@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import { ResumeRow } from "@/lib/types";
-import { canonicalTeamName, normalizeWhitespace, parseRecord } from "@/lib/utils";
+import { ResumeRow } from "../types";
+import { canonicalTeamName, normalizeWhitespace, parseRecord } from "../utils";
 
 const ESPN_BPI_RESUME_URL = "https://www.espn.com/mens-college-basketball/bpi/_/view/resume";
 
