@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import { TeamProfile } from "@/lib/types";
-import { normalizeWhitespace, parseRecord, splitConferenceTail } from "@/lib/utils";
+import { TeamProfile } from "../types";
+import { normalizeWhitespace, parseRecord, splitConferenceTail } from "../utils";
 
 const NCAA_NET_URL = "https://www.ncaa.com/rankings/basketball-men/d1/ncaa-mens-basketball-net-rankings";
 
