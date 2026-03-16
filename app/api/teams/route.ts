@@ -9,20 +9,20 @@ export async function GET() {
     const bpiData = await fetchEspnBpi()
 
     const teams = netData.map((team: any) => {
-      const bpiMatch = bpiData.find(
-        (bpi: any) => String(bpi.team).toLowerCase() === String(team.team).toLowerCase()
+      const match = bpiData.find(
+        (b: any) => String(b.team).toLowerCase() === String(team.team).toLowerCase()
       )
 
       return {
         ...team,
-        sor: bpiMatch?.sor ?? null,
-        bpi: bpiMatch?.bpi ?? null,
+        sor: match?.sor ?? null,
+        bpi: match?.bpi ?? null
       }
     })
 
     return json({ teams })
   } catch (error) {
-    console.error('Error fetching team data:', error)
+    console.error(error)
 
     return NextResponse.json(
       { error: 'Failed to fetch team data' },
