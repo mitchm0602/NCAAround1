@@ -15,5 +15,10 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "typescript": "^5.8.2"
+  },
   "description": "Live NCAA matchup app with frontend and backend routes."
 }
