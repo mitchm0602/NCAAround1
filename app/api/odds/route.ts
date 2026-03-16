@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { fetchEspnOddsGames } from "@/lib/sources/espnOdds";
+import { fetchEspnOdds } from '../../../lib/sources/espnOdds'
+import { json } from '../../../lib/utils'
 
 export const runtime = "nodejs";
 
