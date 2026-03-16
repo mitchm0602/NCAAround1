@@ -1,51 +1,41 @@
-import { NextResponse } from "next/server";
-import { fetchNcaaNetTeams } from "@/lib/sources/ncaaNet";
-import { fetchEspnResumeRows } from "@/lib/sources/espnBpi";
-import { canonicalTeamName } from "@/lib/utils";
-
-export const runtime = "nodejs";
-
-type TeamMapValue = Awaited<ReturnType<typeof fetchNcaaNetTeams>>[number];
+import { NextResponse } from 'next/server'
+import { fetchNcaaNet } from '../../../lib/sources/ncaaNet'
+import { fetchEspnBpi } from '../../../lib/sources/espnBpi'
+import { json } from '../../../lib/utils'
 
 export async function GET() {
   try {
-    const [netTeams, resumeRows] = await Promise.all([
-      fetchNcaaNetTeams(),
-      fetchEspnResumeRows().catch(() => [])
-    ]);
+    const netData = await fetchNcaaNet()
+    const bpiData = await fetchEspnBpi()
 
-    const resumeMap = new Map(
-      resumeRows.map((row) => [canonicalTeamName(row.team), row])
-    );
+    const teams = netData.map((team: any) => {
+      const bpiMatch = bpiData.find(
+        (bpi: any) => bpi.team.toLowerCase() === team.team.toLowerCase()
+      )
 
-    const merged = netTeams.map((team) => {
-      const resume = resumeMap.get(canonicalTeamName(team.team));
       return {
-        ...team,
-        sor: resume?.sor ?? team.sor,
-        sos: resume?.sos ?? team.sos,
-        ncSos: resume?.ncSos ?? team.ncSos,
-        sorSeed: resume?.sorSeed ?? team.sorSeed,
-        sorCurve: resume?.sorCurve ?? team.sorCurve,
-        qualityWins: resume?.qualityWins ?? team.qualityWins
-      } satisfies TeamMapValue;
-    });
-
-    return NextResponse.json({
-      fetchedAt: new Date().toISOString(),
-      source: {
-        net: "NCAA",
-        resume: "ESPN BPI"
-      },
-      count: merged.length,
-      teams: merged
-    }, {
-      headers: {
-        "cache-control": "s-maxage=21600, stale-while-revalidate=86400"
+        team: team.team,
+        netRank: team.rank,
+        record: team.record,
+        sos: team.sos,
+        sor: bpiMatch?.sor ?? null,
+        bpi: bpiMatch?.bpi ?? null
       }
-    });
+    })
+
+    return json({
+      success: true,
+      teams
+    })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Error fetching team data:', error)
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch team data'
+      },
+      { status: 500 }
+    )
   }
 }
