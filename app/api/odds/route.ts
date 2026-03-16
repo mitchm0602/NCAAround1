@@ -1,24 +1,22 @@
-import { NextResponse } from 'next/server'
-import { fetchEspnOdds } from '../../../lib/sources/espnOdds'
-import { json } from '../../../lib/utils'
+import { NextResponse } from "next/server";
+import { fetchEspnOdds } from "../../../lib/sources/espnOdds";
 
 export async function GET() {
   try {
-    const odds = await fetchEspnOdds()
-
-    return json({
-      success: true,
-      odds
-    })
+    const games = await fetchEspnOdds();
+    return NextResponse.json({
+      ok: true,
+      fetchedAt: new Date().toISOString(),
+      gameCount: games.length,
+      games
+    });
   } catch (error) {
-    console.error('Error fetching odds:', error)
-
     return NextResponse.json(
       {
-        success: false,
-        error: 'Failed to fetch odds'
+        ok: false,
+        error: error instanceof Error ? error.message : "Failed to fetch odds"
       },
       { status: 500 }
-    )
+    );
   }
 }
